@@ -1,0 +1,9 @@
+tracking of perishable and spoiled foods
+-damaged goods
+-delayed manufacturing
+
+-products that are running out
+-oversticked products
+
+
+supplier table has an attribute of phone number/email
