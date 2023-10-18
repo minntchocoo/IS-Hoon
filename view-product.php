@@ -63,8 +63,7 @@ $suppliers = $stmtSuppliers->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Product Price</th>
                                             <th>Product Stock</th>
                                             <th>Exppiry Date</th>
-                                            <th>Manufacturing Date</th>
-                                            <th>Quantity</th>
+                                            <th>Manufacturing Date</th>                                           
                                             <th>Category</th>
                                             <th>Flavor</th>
                                             <th>Supplier</th>
@@ -105,7 +104,6 @@ $suppliers = $stmtSuppliers->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= $user['product_stock'] ?></td>
                                                 <td><?= date('M d,Y @ h:i:s A', strtotime($user['exp_date'])) ?></td>
                                                 <td><?= date('M d,Y @ h:i:s A', strtotime($user['man_date'])) ?></td>
-                                                <td><?= $user['quantity'] ?></td>
                                                 <td><?= $categoryName ?></td>
                                                 <td><?= $flavorName ?></td>
                                                 <td><?= $supplierName ?></td>

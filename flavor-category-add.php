@@ -263,27 +263,27 @@ $category = include('database/show-category.php');
     <script src="js/bootstrap-5.3.0-alpha3-dist/js/bootstrap.min.js"></script>
 
     <script>
-    $(document).ready(function() {
-        $('.updateCategory').click(function() {
-            var targetModal = $(this).data('target');
-            $(targetModal).modal('show');
-        });
+        $(document).ready(function() {
+            $('.updateCategory').click(function() {
+                var targetModal = $(this).data('target');
+                $(targetModal).modal('show');
+            });
 
-        $('.modal').on('hidden.bs.modal', function() {
-            $(this).find('form')[0].reset();
-        });
+            $('.modal').on('hidden.bs.modal', function() {
+                $(this).find('form')[0].reset();
+            });
 
-        $('.close-modal').click(function() {
-            var modal = $(this).closest('.modal');
-            modal.modal('hide');
-        });
+            $('.close-modal').click(function() {
+                var modal = $(this).closest('.modal');
+                modal.modal('hide');
+            });
 
-        $('.modal').on('click', function(e) {
-            if ($(e.target).hasClass('modal') || $(e.target).hasClass('close')) {
-                $(this).modal('hide');
-            }
+            $('.modal').on('click', function(e) {
+                if ($(e.target).hasClass('modal') || $(e.target).hasClass('close')) {
+                    $(this).modal('hide');
+                }
+            });
         });
-    });
     
     </script>
     
@@ -314,33 +314,8 @@ $category = include('database/show-category.php');
 
     <!-- CATEGORY ADD -->
     <script>
-    $(document).ready(function() {
-        $('.addCategory').click(function() {
-            var targetModal = $(this).data('target');
-            $(targetModal).modal('show');
-        });
-
-        $('.modal').on('hidden.bs.modal', function() {
-            $(this).find('form')[0].reset();
-        });
-
-        $('.close-modal').click(function() {
-            var modal = $(this).closest('.modal');
-            modal.modal('hide');
-        });
-
-        $('.modal').on('click', function(e) {
-            if ($(e.target).hasClass('modal') || $(e.target).hasClass('close')) {
-                $(this).modal('hide');
-            }
-        });
-    });
-    </script>
-    <!-- FLAVOR ADD -->
-
-    <script>
         $(document).ready(function() {
-            $('.addFlavor').click(function() {
+            $('.addCategory').click(function() {
                 var targetModal = $(this).data('target');
                 $(targetModal).modal('show');
             });
@@ -360,4 +335,32 @@ $category = include('database/show-category.php');
                 }
             });
         });
-        </script>
+    </script>
+    <!-- FLAVOR ADD -->
+
+    <script>
+      $(document).ready(function() {
+            // Attach the event handler to the parent container with class 'column-5'
+            $('.column-5').on('click', '.addFlavor', function() {
+                var targetModal = $(this).data('target');
+                $(targetModal).modal('show');
+            });
+
+            $('.modal').on('hidden.bs.modal', function() {
+                $(this).find('form')[0].reset();
+            });
+
+            $('.close-modal').click(function() {
+                var modal = $(this).closest('.modal');
+                modal.modal('hide');
+            });
+
+            $('.modal').on('click', function(e) {
+                if ($(e.target).hasClass('modal') || $(e.target).hasClass('close')) {
+                    $(this).modal('hide');
+                }
+            });
+        });
+
+
+    </script>

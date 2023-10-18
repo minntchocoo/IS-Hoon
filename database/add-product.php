@@ -8,7 +8,6 @@
         $product_stock = $_POST['product_stock'];
         $exp_date = $_POST['exp_date'];  
         $man_date = $_POST['man_date'];  
-        $quantity = $_POST['quantity'];  
         $category = $_POST['category'];
         $flavor = $_POST['flavor'];
         $supplier = $_POST['supplier'];
@@ -18,9 +17,9 @@
 
         try{
             $command = "INSERT INTO 
-                                product(product_name, product_price, product_stock, exp_date, man_date, quantity, Category_ID, flavor_ID, Supplier_ID)
+                                product(product_name, product_price, product_stock, exp_date, man_date,  Category_ID, flavor_ID, Supplier_ID)
                             VALUES 
-                                ('".$product_name."','".$product_price."','".$product_stock."', '".$exp_date."', '".$man_date."', '".$quantity."', '".$category."', '".$flavor."', '".$supplier."')";
+                                ('".$product_name."','".$product_price."','".$product_stock."', '".$exp_date."', '".$man_date."', '".$category."', '".$flavor."', '".$supplier."')";
                             
 
             include('connection.php');
