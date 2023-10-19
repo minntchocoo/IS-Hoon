@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3308
--- Generation Time: Oct 18, 2023 at 01:27 PM
+-- Generation Time: Oct 19, 2023 at 12:35 PM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 8.0.7
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `inventory`
 --
+CREATE DATABASE IF NOT EXISTS `inventory` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `inventory`;
 
 -- --------------------------------------------------------
 
@@ -54,12 +56,13 @@ CREATE TABLE `flavor` (
 CREATE TABLE `product` (
   `product_num` int(11) NOT NULL,
   `product_name` varchar(255) NOT NULL,
+  `product_price` varchar(255) NOT NULL,
   `product_stock` varchar(255) NOT NULL,
   `exp_date` datetime NOT NULL,
   `man_date` datetime NOT NULL,
   `Category_ID` int(11) NOT NULL,
   `flavor_ID` int(11) NOT NULL,
-  `supplier_ID` int(11) NOT NULL
+  `Supplier_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -70,10 +73,17 @@ CREATE TABLE `product` (
 
 CREATE TABLE `supplier` (
   `Supplier_ID` int(11) NOT NULL,
-  `supplier` varchar(255) NOT NULL,
+  `company_name` varchar(255) NOT NULL,
   `contact_num` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `supplier`
+--
+
+INSERT INTO `supplier` (`Supplier_ID`, `company_name`, `contact_num`, `email`) VALUES
+(1, 'Rebisco', '32312', 'sean11@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -122,10 +132,12 @@ ALTER TABLE `flavor`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`product_num`),
-  ADD UNIQUE KEY `Category_ID` (`Category_ID`,`flavor_ID`,`supplier_ID`),
-  ADD KEY `Category_ID_2` (`Category_ID`,`flavor_ID`,`supplier_ID`),
-  ADD KEY `flavor_ID` (`flavor_ID`),
-  ADD KEY `product_ibfk_3` (`supplier_ID`);
+  ADD KEY `Category_ID_2` (`Category_ID`,`flavor_ID`,`Supplier_ID`),
+  ADD KEY `Supplier_ID` (`Supplier_ID`),
+  ADD KEY `Category_ID` (`Category_ID`,`flavor_ID`,`Supplier_ID`) USING BTREE,
+  ADD KEY `flavor_ID` (`flavor_ID`) USING BTREE,
+  ADD KEY `flavor_ID_2` (`flavor_ID`) USING BTREE,
+  ADD KEY `Category_ID_3` (`Category_ID`) USING BTREE;
 
 --
 -- Indexes for table `supplier`
@@ -147,19 +159,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `flavor`
 --
 ALTER TABLE `flavor`
-  MODIFY `flavor_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `flavor_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `product_num` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `product_num` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `supplier`
 --
 ALTER TABLE `supplier`
-  MODIFY `Supplier_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Supplier_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -177,7 +189,7 @@ ALTER TABLE `user`
 ALTER TABLE `product`
   ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`flavor_ID`) REFERENCES `flavor` (`flavor_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `product_ibfk_2` FOREIGN KEY (`Category_ID`) REFERENCES `category` (`Category_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `product_ibfk_3` FOREIGN KEY (`supplier_ID`) REFERENCES `supplier` (`Supplier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `product_ibfk_3` FOREIGN KEY (`Supplier_ID`) REFERENCES `supplier` (`Supplier_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
