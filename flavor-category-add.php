@@ -62,8 +62,10 @@ $category = include('database/show-category.php');
                                                     <i class="fa fa-trash"></i> Delete</a>
                                                 </td>
                                             </tr>
-                                             <!-- FLAVOR EDIT-->
-                                             <div class="modal fade" id="updateFlavorModal<?= $f['flavor_ID'] ?>" tabindex="-1" role="dialog" aria-labelledby="updateflavorModalLabel<?= $f['flavor_ID'] ?>" aria-hidden="true">
+                                          
+                                        <?php } ?>
+                                           <!-- FLAVOR EDIT-->
+                                           <div class="modal fade" id="updateFlavorModal<?= $f['flavor_ID'] ?>" tabindex="-1" role="dialog" aria-labelledby="updateflavorModalLabel<?= $f['flavor_ID'] ?>" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -100,40 +102,39 @@ $category = include('database/show-category.php');
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- FLAVOR MODAL-->
-                                            <div class="modal fade" id="addFlavorModal" tabindex="-1" role="dialog" aria-labelledby="addFlavorModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="addFlavorModalLabel">Add Flavor</h5>
-                                                            <button type="button" class="close-modal" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form method="POST" action="database/add-flavor.php">
-                                                                <div class="form-group">
-                                                                    <label for="flavor">Flavor:</label>
-                                                                    <input type="text" class="form-control" name="flavor" required>
-                                                                </div>
+                                        <!-- FLAVOR MODAL-->
+                                        <div class="modal fade" id="addFlavorModal" tabindex="-1" role="dialog" aria-labelledby="addFlavorModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="addFlavorModalLabel">Add Flavor</h5>
+                                                        <button type="button" class="close-modal" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="POST" action="database/add-flavor.php">
+                                                            <div class="form-group">
+                                                                <label for="flavor">Flavor:</label>
+                                                                <input type="text" class="form-control" name="flavor" required>
+                                                            </div>
 
-                                                                <div class="form-group">
-                                                                    <label for="description">Description:</label>
-                                                                    <input type="text" class="form-control" name="description" required>
-                                                                </div>
+                                                            <div class="form-group">
+                                                                <label for="description">Description:</label>
+                                                                <input type="text" class="form-control" name="description" required>
+                                                            </div>
 
-                                                                <!-- Add more fields here if needed -->
+                                                            <!-- Add more fields here if needed -->
 
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
-                                                                    <button type="submit" class="btn btn-primary">Add Flavor</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-primary">Add Flavor</button>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        <?php } ?>
+                                        </div>
                                     </tbody>
                                 </table>
                                 <p class="userCount"><?= count($flavors) ?> flavors</p>
@@ -211,7 +212,11 @@ $category = include('database/show-category.php');
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- CATEGORY ADD -->
+                                         
+                                           
+                                        <?php } ?>
+
+                                       <!-- CATEGORY ADD -->
                                             <!-- Add Category Modal -->
                                             <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -246,8 +251,6 @@ $category = include('database/show-category.php');
                                                 </div>
                                             </div>
 
-                                           
-                                        <?php } ?>
                                     </tbody>
                                 </table>
                                 <p class="userCount"><?= count($category) ?> Category</p>
