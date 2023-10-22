@@ -6,10 +6,10 @@ if (!isset($_SESSION['user'])) {
 }
 $_SESSION['table'] = 'sales';
 $user = $_SESSION['user'];
-$products = include('database/show-sales.php');
+$products = include('database/show-product.php');
+$sales = include('database/show-sales.php');
 
-
-$sql_product = "SELECT product_num, product_name FROM product";
+$sql_product = "SELECT product_num, product_name, product_price FROM product";
 include('database/connection.php');
 try
 {
@@ -51,139 +51,48 @@ try
                         <div class="dashboard_content_main">
                             <div id = "userAddFormContainer">
 
-                                <form action="database/sales-db.php" method="POST" class="appForm">
-                                    <div class ="appFormInputContainer">
-                                        <h2>Product Selection</h2>
-                                        <select id="productSelect">
-                                            <option value="1"> $30.00</option>
-                                            <option value="2"> $55.00</option>
-                                            <option value="3"> $80.00</option>
-                                        </select>
-                                        <input type="number" id="quantity" placeholder="Quantity" min="1">
-                                        <button onclick="addToCart()">Add to Cart</button>
+                            <form id="salesForm" action="database/sales-db.php" method="POST" class="appForm">
+                                <div class="appFormInputContainer">
+                                    <h2>Product Selection</h2>
+                                    <select id="productSelect" name="product_id">
+                                        <?php foreach ($rs1 as $output) { ?>
+                                            <option value="<?php echo $output['product_num']; ?>">
+                                                <?php echo $output['product_name']; ?> - $<?php echo number_format($output['product_price'], 2); ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                    <input type="number" id="quantity" name="quantity" placeholder="Quantity" min="1">
+                                    <button onclick="addToCart()">Add to Cart</button>
+                                </div>
+
+                                <div class="appFormInputContainer">
+                                    <label for="product_name">Product</label>
+                                    <select name="product_name" id="product_name">
+                                        <option> -- Select Product -- </option>
+                                        <?php foreach ($rs1 as $output) { ?>
+                                            <option value="<?php echo $output['product_num']; ?>">
+                                                <?php echo $output['product_name']; ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+
+                                <br>
+
+                                <div class="appFormInputContainer">
+                                    <div>
+                                        <h2>Shopping Cart</h2>
+                                        <ul id="cart">
+                                            <!-- Cart items will be displayed here -->
+                                        </ul>
+                                        <p>Total: $<span id="total">0.00</span></p>
+                                        <input type="hidden" value="">
                                     </div>
-                                    <div class="appFormInputContainer">
-                                            <label for="product_num"> Product </label>
-                                            <select name="product_name" id="product_name">
-                                                <option> -- Select Product -- </option>
-                                                <?php foreach ($rs1 as $output) {?>
-                                                <option value="<?php echo $output['product_num']; ?>"><?php echo $output['product_name'];?></option>
-                                                <?php }?>
-                                            </select>
+                                </div>
 
-                                    </div>
-                                    
-                                    <button type="submit" class="appBtn"><i class ="fa fa-plus"></i> Add Sales</button> 
-                                    
-                                    <br>
+                                <button type="button" class="appBtn" onclick="checkout()">Checkout</button>
+                            </form>
 
-                                    <div class="appFormInputContainer">
-                                        <div>
-                                            <h2>Shopping Cart</h2>
-                                            <ul id="cart">
-                                                <!-- Cart items will be displayed here -->
-                                            </ul>
-                                            <p>Total: $<span id="total">0.00</span></p>
-                                            <button onclick="checkout()">Checkout</button>
-                                        </div>
-
-                                        <script>
-                                            const products = [
-                                                { id: 1, name: "Product 1", price: 30.00 },
-                                                { id: 2, name: "Product 2", price: 55.00 },
-                                                { id: 3, name: "Product 3", price: 80.00 }
-                                            ];
-
-                                            const cart = [];
-
-                                            function addToCart() {
-                                                const productSelect = document.getElementById("productSelect");
-                                                const quantityInput = document.getElementById("quantity");
-                                                const selectedProductId = parseInt(productSelect.value);
-                                                const quantity = parseInt(quantityInput.value);
-
-                                                if (!quantity || quantity < 1) {
-                                                    alert("Please enter a valid quantity.");
-                                                    return;
-                                                }
-
-                                                const selectedProduct = products.find(product => product.id === selectedProductId);
-                                                if (selectedProduct) {
-                                                    const cartItem = {
-                                                        product: selectedProduct,
-                                                        quantity
-                                                    };
-                                                    cart.push(cartItem);
-                                                    updateCart();
-                                                    quantityInput.value = "";
-                                                }
-                                            }
-
-                                            function updateCart() {
-                                                const cartList = document.getElementById("cart");
-                                                const totalSpan = document.getElementById("total");
-                                                let cartHTML = "";
-                                                let total = 0;
-
-                                                cart.forEach(item => {
-                                                    const { product, quantity } = item;
-                                                    const itemTotal = product.price * quantity;
-                                                    total += itemTotal;
-                                                    cartHTML += `<li>${product.name} x${quantity} - $${itemTotal.toFixed(2)}</li>`;
-                                                });
-
-                                                cartList.innerHTML = cartHTML;
-                                                totalSpan.textContent = total.toFixed(2);
-                                            }
-
-                                            function checkout() {
-                                                // Perform the checkout logic here.
-                                                // This is a simplified example, so adjust it according to your requirements.
-
-                                                // Verify if the cart is empty.
-                                                if (cart.length === 0) {
-                                                    alert("Your cart is empty. Add items before checking out.");
-                                                    return;
-                                                }
-
-                                                // Generate a receipt or send data to the server for further processing.
-                                                // You can customize this part based on your specific needs.
-
-                                                const receipt = {
-                                                    items: cart,
-                                                    total: getTotal(),
-                                                };
-
-                                                // Display the receipt (in this example, we alert it).
-                                                alert(formatReceipt(receipt));
-
-                                                // Clear the cart and update the UI.
-                                                cart.length = 0; // Clear the cart array.
-                                                updateCart();
-                                            }
-
-                                            function getTotal() {
-                                                return cart.reduce((total, item) => {
-                                                    const itemTotal = item.product.price * item.quantity;
-                                                    return total + itemTotal;
-                                                }, 0);
-                                            }
-
-                                            function formatReceipt(receipt) {
-                                                const items = receipt.items.map(item => {
-                                                    return `${item.product.name} x${item.quantity} - $${(item.product.price * item.quantity).toFixed(2)}`;
-                                                });
-
-                                                return `Receipt:\n${items.join('\n')}\n\nTotal: $${receipt.total.toFixed(2)}`;
-                                            }
-
-                                        </script>
-                                    </div>
-                                    
-
-                                       
-                                
-                                </form>
                                 <?php 
                                     if(isset($_SESSION['response'])) {
                                         $response_message = $_SESSION['response']['message']; 
@@ -210,74 +119,196 @@ try
 
     
  
-    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src='js/script.js'></script>
 </body>
+
+    <script>
+        const products = <?php echo json_encode($products); ?>;
+        const cart = [];
+        function addToCart() {
+            event.preventDefault(); 
+            const productSelect = document.getElementById("productSelect");
+            const quantityInput = document.getElementById("quantity");
+            const selectedProductId = productSelect.value;
+            const quantity = parseInt(quantityInput.value);
+            
+           
+
+            if (!quantity || quantity < 1) {
+                alert("Please enter a valid quantity.");
+                return;
+            }
+
+            try {
+                
+                const selectedProduct = products.find(product => product.product_num === selectedProductId);
+                
+
+                if (!selectedProduct) {
+                    throw new Error("Product not found in the database.");
+                }
+
+                const cartItem = {
+                    product: selectedProduct,
+                    quantity
+                };
+                cart.push(cartItem);
+                updateCart();
+                quantityInput.value = "";
+            } catch (error) {
+                alert(`Error adding to cart: ${error.message}`);
+            }
+        }
+
+        function updateCart() {
+            const cartList = document.getElementById("cart");
+            const totalSpan = document.getElementById("total");
+            let cartHTML = "";
+            let total = 0;
+
+            cart.forEach(item => {
+                const { product, quantity } = item;
+                
+                const itemTotal = product['product_price'] * quantity;
+                total += itemTotal;
+                cartHTML += `<li>${product.product_name} x${quantity} - $${itemTotal.toFixed(2)}</li>`;
+            });
+
+            cartList.innerHTML = cartHTML;
+            totalSpan.textContent = total.toFixed(2);
+        }
+
+        function checkout() {
+
+           
+            // Perform the checkout logic here.
+            // This is a simplified example, so adjust it according to your requirements.
+
+            // Verify if the cart is empty.
+            if (cart.length === 0) {
+                alert("Your cart is empty. Add items before checking out.");
+                return;
+            }
+
+            // Generate a receipt or send data to the server for further processing.
+            // You can customize this part based on your specific needs.
+
+            const receipt = {
+                items: cart,
+                total: getTotal(),
+            };
+            console.log(cart)
+            // Display the receipt (in this example, we alert it).
+            alert(formatReceipt(receipt));
+
+            const cartData = cart.map(item => ({
+                product_num: item.product.product_num,
+                total: item.product.product_price * item.quantity,
+                quantity: item.quantity
+            }));
+
+            
+            $.ajax({
+                type: "POST",
+                    url: "database/sales-db.php", // Change this to the actual URL of your PHP script
+                    data: { cart: JSON.stringify(cartData) },
+
+                    success: function (response) {
+                        if (response === "success") {
+                            alert("Items recorded in the database successfully.");
+                            // Clear the cart and update the UI.
+                            cart.length = 0; // Clear the cart array.
+                            updateCart();
+                        } else {
+                            console.log(response)
+                            alert("Failed to record items in the database.");
+                            
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while communicating with the server.");
+                    }
+                });
+                        
+            // Clear the cart and update the UI.
+            
+
+        }
+
+        function getTotal() {
+            return cart.reduce((total, item) => {
+                const itemTotal = item.product.product_price * item.quantity;
+                return total + itemTotal;
+            }, 0);
+        }
+
+        function formatReceipt(receipt) {
+            const items = receipt.items.map(item => {
+                return `${item.product.product_name} x${item.quantity} - $${(item.product.product_price * item.quantity).toFixed(2)}`;
+            });
+
+            return `Receipt:\n${items.join('\n')}\n\nTotal: $${receipt.total.toFixed(2)}`;
+        }
+
+
+
+
+    </script>
 </html>
 
+
 <?php
-// Include your database connection code here (e.g., db_connection.php)
-// Replace this with your actual database connection code.
+try {
+    // Replace with your actual database credentials and details
+    require('database/connection.php');
 
-// Simulate a database connection
-
-$servername = "localhost";
-$username = "yang";
-$password = "ily3000";
-$inventory = "inventory.sql"; // Replace with your actual database name
-
-// Create a database connection
-$conn = mysqli_connect($servername, $username, $password, $inventory);
-
-
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-
-// Function to update product quantity after a sale
-function updateProductQuantity($product_num, $sales) {
-    global $conn;
-
-    $sql = "UPDATE product SET product_stock = product_stock - $sales WHERE id = $product_num";
-
-    if (mysqli_query($conn, $sql)) {
-        echo "Product quantity updated successfully.";
-    } else {
-        echo "Error updating product quantity: " . mysqli_error($conn);
-    }
-}
-
-// Function to check and notify when stock is low
-function checkLowStock($product_num, $threshold) {
-    global $conn;
-
-    $sql = "SELECT name, product_stock FROM product WHERE id = $product_num";
-    $result = mysqli_query($conn, $sql);
-
-    if (mysqli_num_rows($result) > 0) {
-        $product = mysqli_fetch_assoc($result);
-        $product_stock = $product['product_stock'];
-
-        if ($product_stock <= $threshold) {
-            echo "Low stock for {$product['name']}. Current quantity: $product_stock.";
-            // Implement notification logic (e.g., send an email).
+    // Function to update product quantity after a sale
+    function updateProductQuantity($conn, $product_num, $sales) {
+        $sql = "UPDATE product SET product_stock = product_stock - :sales WHERE product_num = :product_num";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':sales', $sales, PDO::PARAM_INT);
+        $stmt->bindParam(':product_num', $product_num, PDO::PARAM_INT);
+        
+        if ($stmt->execute()) {
+            echo "Product quantity updated successfully.";
+        } else {
+            echo "Error updating product quantity: " . $stmt->errorInfo()[2];
         }
-    } else {
-        echo "Product not found.";
     }
+
+    // Function to check and notify when stock is low
+    function checkLowStock($conn, $product_num, $threshold) {
+        $sql = "SELECT product_name, product_stock FROM product WHERE product_num = :product_num";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':product_num', $product_num, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($product) {
+            $product_stock = $product['product_stock'];
+
+            if ($product_stock <= $threshold) {
+                echo "Low stock for {$product['product_name']}. Current quantity: $product_stock.";
+                // Implement notification logic (e.g., send an email).
+            }
+        } else {
+            echo "Product not found.";
+        }
+    }
+
+    // Example usage:
+    $product_num = 3; // Replace with the actual product ID.
+    $sales = 0; // Replace with the actual quantity sold.
+    $low_stock_threshold = 10; // Set your low stock threshold.
+
+    updateProductQuantity($conn, $product_num, $sales);
+    checkLowStock($conn, $product_num, $low_stock_threshold);
+
+    // Close the database connection
+    $conn = null;
+} catch (PDOException $e) {
+    echo "Connection failed: " . $e->getMessage();
 }
-
-// Example usage:
-$product_num = 1; // Replace with the actual product ID.
-$sales = 5; // Replace with the actual quantity sold.
-$low_stock_threshold = 10; // Set your low stock threshold.
-
-updateProductQuantity($product_num, $sales);
-checkLowStock($product_num, $low_stock_threshold);
-
-// Close the database connection
-mysqli_close($conn);
 ?>
-
-            
-            
