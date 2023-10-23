@@ -84,10 +84,6 @@ try
                                         <label for="man_date">Manufacturing Date</label>
                                         <input type="date" class = "appFormInput" id="man_date" name= "man_date"/>
                                     </div>
-                                    <div class ="appFormInputContainer">
-                                        <label for="quantity">Quantity</label>
-                                        <input type="text" class = "appFormInput" id="quantity" name= "quantity"/>
-                                    </div>
                                     <div class="appFormInputContainer">
                                             <label for="Category_ID"> Category </label>
                                             <select name="category" id="category">
