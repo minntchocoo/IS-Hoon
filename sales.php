@@ -54,6 +54,7 @@ try
                             <form id="salesForm" action="database/sales-db.php" method="POST" class="appForm">
                                 <div class="appFormInputContainer">
                                     <h2>Product Selection</h2>
+                                    <label for="product_name">Product</label>
                                     <select id="productSelect" name="product_id">
                                         <?php foreach ($rs1 as $output) { ?>
                                             <option value="<?php echo $output['product_num']; ?>">
@@ -63,18 +64,6 @@ try
                                     </select>
                                     <input type="number" id="quantity" name="quantity" placeholder="Quantity" min="1">
                                     <button onclick="addToCart()">Add to Cart</button>
-                                </div>
-
-                                <div class="appFormInputContainer">
-                                    <label for="product_name">Product</label>
-                                    <select name="product_name" id="product_name">
-                                        <option> -- Select Product -- </option>
-                                        <?php foreach ($rs1 as $output) { ?>
-                                            <option value="<?php echo $output['product_num']; ?>">
-                                                <?php echo $output['product_name']; ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
                                 </div>
 
                                 <br>
@@ -204,6 +193,7 @@ try
 
             const cartData = cart.map(item => ({
                 product_num: item.product.product_num,
+                product_name: item.product.product_name,
                 total: item.product.product_price * item.quantity,
                 quantity: item.quantity
             }));
@@ -213,10 +203,12 @@ try
                 type: "POST",
                     url: "database/sales-db.php", // Change this to the actual URL of your PHP script
                     data: { cart: JSON.stringify(cartData) },
-
+                    
                     success: function (response) {
-                        if (response === "success") {
+                        var responseData = JSON.parse(response);
+                        if (responseData.status === "success") {
                             alert("Items recorded in the database successfully.");
+                            alert(responseData.messages)
                             // Clear the cart and update the UI.
                             cart.length = 0; // Clear the cart array.
                             updateCart();
@@ -264,18 +256,6 @@ try {
     require('database/connection.php');
 
     // Function to update product quantity after a sale
-    function updateProductQuantity($conn, $product_num, $sales) {
-        $sql = "UPDATE product SET product_stock = product_stock - :sales WHERE product_num = :product_num";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':sales', $sales, PDO::PARAM_INT);
-        $stmt->bindParam(':product_num', $product_num, PDO::PARAM_INT);
-        
-        if ($stmt->execute()) {
-            echo "Product quantity updated successfully.";
-        } else {
-            echo "Error updating product quantity: " . $stmt->errorInfo()[2];
-        }
-    }
 
     // Function to check and notify when stock is low
     function checkLowStock($conn, $product_num, $threshold) {
@@ -303,7 +283,6 @@ try {
     $sales = 0; // Replace with the actual quantity sold.
     $low_stock_threshold = 10; // Set your low stock threshold.
 
-    updateProductQuantity($conn, $product_num, $sales);
     checkLowStock($conn, $product_num, $low_stock_threshold);
 
     // Close the database connection
