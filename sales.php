@@ -53,7 +53,7 @@ try
 
                             <form id="salesForm" action="database/sales-db.php" method="POST" class="appForm">
                                 <div class="appFormInputContainer">
-                                    <h2>Product Selection</h2>
+                                    <h2><i class="fa-solid fa-table-list"></i> Product Selection</h2>
                                     <label for="product_name">Product</label>
                                     <select id="productSelect" name="product_id">
                                         <?php foreach ($rs1 as $output) { ?>
@@ -70,7 +70,7 @@ try
 
                                 <div class="appFormInputContainer">
                                     <div>
-                                        <h2>Shopping Cart</h2>
+                                        <h2><i class="fa-solid fa-cart-plus"></i> Shopping Cart</h2>
                                         <ul id="cart">
                                             <!-- Cart items will be displayed here -->
                                         </ul>

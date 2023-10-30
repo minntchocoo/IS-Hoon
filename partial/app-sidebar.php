@@ -22,7 +22,7 @@
                 <a href="./user-add.php"><i class="fa fa-user-plus "></i> <span class="menuText">Create New Account</span></a>
             </li>
             <li>
-                <a href="./sales.php"><i class="fa-solid fa-boxes-stacked"> </i> <span class="menuText" style="margin-left: 3px;"> Sales</span></a>
+                <a href="./sales.php"><i class="fa-solid fa-receipt"></i> <span class="menuText" style="margin-left: 3px;"> Sales</span></a>
             </li>
             <li>
                 <a href="./product-add.php"><i class="fa-solid fa-boxes-stacked"> </i> <span class="menuText" style="margin-left: 3px;"> Add Product</span></a>
