@@ -15,14 +15,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     include('connection.php');
 
     // Prepare the SQL statement
-    $stmt = $conn->prepare("INSERT INTO flavor (flavor, description) VALUES (:flavor, :description)");
+   // Assuming $conn is your database connection
+
+    // Prepare the SQL call to the stored procedure
+    $stmt = $conn->prepare("CALL InsertFlavor(:flavor, :description)");
 
     // Bind the parameters
-    $stmt->bindParam(':flavor', $flavor);
-    $stmt->bindParam(':description', $description);
+    $stmt->bindParam(':flavor', $flavor, PDO::PARAM_STR);
+    $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+
+    
 
     // Execute the statement
     $stmt->execute();
+
+    // Optionally, you can check for success or handle errors
+    if ($stmt->errorCode() !== "00000") {
+        $errorInfo = $stmt->errorInfo();
+        echo "Error executing stored procedure: " . $errorInfo[2];
+    } else {
+        echo "Stored procedure executed successfully.";
+    }
+
 
     // Close the database connection
     $conn = null;
