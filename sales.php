@@ -121,7 +121,7 @@ try
             const quantityInput = document.getElementById("quantity");
             const selectedProductId = productSelect.value;
             const quantity = parseInt(quantityInput.value);
-            
+            console.log( products)
            
 
             if (!quantity || quantity < 1) {
