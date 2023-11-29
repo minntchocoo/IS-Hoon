@@ -41,8 +41,8 @@ try {
             $stmt->execute();
 
             // Check if the stock is below 10
-            if ($current_stock - $quantity < 10) {
-                $stock_increase = -10;
+            if ($current_stock - $quantity < 5) {
+                $stock_increase = 30;
                 
                 $stmt = $pdo->prepare("UPDATE product SET product_stock = product_stock - :quantity WHERE product_num = :product_num");
                 $stmt->bindParam(':product_num', $product_num);

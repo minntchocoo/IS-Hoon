@@ -50,6 +50,22 @@ try
             <div class="dashboard_content">
                         <div class="dashboard_content_main">
                             <div id = "userAddFormContainer">
+                            <?php 
+                                    if(isset($_SESSION['response'])) {
+                                        $response_message = $_SESSION['response']['messages']; 
+                                        $is_success = $_SESSION['response']['success'];
+                                
+                                ?>s
+                                    <div class = "responseMessage">
+                                        <p class = "responseMessage" <?= $is_success ? 'responseMessage__success' : 'responseMessage__error' ?>"> 
+                                            <?= $response_message ?>
+
+                                        </p>
+
+                                    </div>
+                                <?php unset($_SESSION['response']); } 
+                                ?>
+                            
 
                             <form id="salesForm" action="database/sales-db.php" method="POST" class="appForm">
                                 <div class="appFormInputContainer">
@@ -82,22 +98,7 @@ try
                                 <button type="button" class="appBtn" onclick="checkout()">Checkout</button>
                             </form>
 
-                                <?php 
-                                    if(isset($_SESSION['response'])) {
-                                        $response_message = $_SESSION['response']['message']; 
-                                        $is_success = $_SESSION['response']['success'];
                                 
-                                ?>s
-                                    <div class = "responseMessage">
-                                        <p class = "responseMessage" <?= $is_success ? 'responseMessage__success' : 'responseMessage__error' ?>"> 
-                                            <?= $response_message ?>
-
-                                        </p>
-
-                                    </div>
-                                <?php unset($_SESSION['response']); } 
-                                ?>
-                            
                             </div>
                                         
                         </div>
@@ -131,7 +132,7 @@ try
 
             try {
                 
-                const selectedProduct = products.find(product => product.product_num === selectedProductId);
+                const selectedProduct = products.find(products => products.product_num === selectedProductId);
                 
 
                 if (!selectedProduct) {
