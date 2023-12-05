@@ -114,6 +114,10 @@ try
                                             </select>
 
                                     </div>
+                                    <div class ="appFormInputContainer">
+                                        <label for="image_url">Image Link</label>
+                                        <input type="text" class = "appFormInput" id="image_url" name= "image_url"/>
+                                    </div>
 
 
                                     <button type="submit" class="appBtn"><i class ="fa fa-plus"></i> Add Product</button>

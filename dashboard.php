@@ -3,10 +3,13 @@
      if(!isset($_SESSION['user'])) header('Location: index.php');
      $_SESSION['table'] = 'users';
      $user = $_SESSION['user'];
-    
+     require('database/connection.php');
+     $pdo = $conn;
+     // Fetch products from the database
+     $stmt = $pdo->query("SELECT * FROM product");
+     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
-
+    
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +20,28 @@
 
     <link rel="stylesheet" type="text/css" href="css/login.css?v=p<?php echo time();?>">
     <script src="https://kit.fontawesome.com/2cfb65917d.js" crossorigin="anonymous"></script>
-
+    <style>
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .product-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        .product-card h3 {
+            margin-top: 0;
+        }
+        .product-card p {
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
     <div id="dashboardMainContainer">
@@ -26,16 +50,23 @@
             <?php include('partial/app-topNav.php') ?>
             <div class="dashboard_content">
                 <div class="dashboard_content_main">
-
+                    <h2>On-Stock Products</h2>
+                    <div id="productList">
+                        <?php foreach ($products as $product) : ?>
+                            <div class="product-card">
+                                <img src="<?php echo $product['image_url']; ?>" alt="<?php echo $product['product_name']; ?>">
+                                <div>
+                                    <h3><?php echo $product['product_name']; ?></h3>
+                                    <p>Stock: <?php echo $product['product_stock']; ?></p>
+                                    <p>Price: $<?php echo $product['product_price']; ?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </div>
-        
     </div>
-
-    
- 
-    
-<script src='js/script.js'></script>
+    <script src='js/script.js'></script>
 </body>
 </html>

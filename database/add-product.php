@@ -11,15 +11,16 @@
         $category = $_POST['category'];
         $flavor = $_POST['flavor'];
         $supplier = $_POST['supplier'];
+        $imageurl = $_POST['image_url'];
         //$encrypted = password_hash($password, PASSWORD_DEFAULT);
         // ->RANDOMIZE PASSWORD IN DATABASE (41:00MINUTE IN YT VID)
         // Adding records ----
 
         try{
             $command = "INSERT INTO 
-                                product(product_name, product_price, product_stock, exp_date, man_date,  Category_ID, flavor_ID, Supplier_ID)
+                                product(product_name, product_price, product_stock, exp_date, man_date,  Category_ID, flavor_ID, Supplier_ID, image_url)
                             VALUES 
-                                ('".$product_name."','".$product_price."','".$product_stock."', '".$exp_date."', '".$man_date."', '".$category."', '".$flavor."', '".$supplier."')";
+                                ('".$product_name."','".$product_price."','".$product_stock."', '".$exp_date."', '".$man_date."', '".$category."', '".$flavor."', '".$supplier."', '".$imageurl"')";
                             
 
             include('connection.php');

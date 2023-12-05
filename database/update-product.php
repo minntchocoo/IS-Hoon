@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category = $sanitizedNewData['Category_ID'];
     $flavor = $sanitizedNewData['flavor_ID'];
     $supplier = $sanitizedNewData['supplier_ID'];
+    $imageurl = $sanitizedNewData['image_url'];
     // Add more fields as per your requirements
 
     // Prepare the SQL statement to update the product
@@ -51,7 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             man_date = :man_date,
             Category_ID = :Category_ID,
             flavor_ID = :flavor_ID,
-            Supplier_ID = :Supplier_ID
+            Supplier_ID = :Supplier_ID,
+            image_url = :image_url
 
 
             WHERE product_num = :product_num";
@@ -67,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':flavor_ID', $flavor);
     $stmt->bindParam(':Supplier_ID', $supplier);
     $stmt->bindParam(':product_num', $productNum);
-
+    $stmt->bindParam(':image_url', $imageurl);
 
     // Check if the update was successful
     if ($stmt->execute()) {

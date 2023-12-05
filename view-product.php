@@ -67,6 +67,7 @@ $suppliers = $stmtSuppliers->fetchAll(PDO::FETCH_ASSOC);
                                             <th>Category</th>
                                             <th>Flavor</th>
                                             <th>Supplier</th>
+                                            <th>Image</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -107,6 +108,8 @@ $suppliers = $stmtSuppliers->fetchAll(PDO::FETCH_ASSOC);
                                                 <td><?= $categoryName ?></td>
                                                 <td><?= $flavorName ?></td>
                                                 <td><?= $supplierName ?></td>
+                                                <td><?= $user['image_url'] ?></td>
+
                                                 <td>
                                                 <!-- <a href="database/update-product.php?product_num=<?= $user['product_num'] ?>" class="update_product">
                                                 <i class="fa fa-pencil"></i> Edit
@@ -190,7 +193,11 @@ $suppliers = $stmtSuppliers->fetchAll(PDO::FETCH_ASSOC);
                                                                             </option>
                                                                         <?php } ?>
                                                                     </select>
-                                                                </div>      
+                                                                </div> 
+                                                                <div class="form-group">
+                                                                    <label for="image_url">Image link</label>
+                                                                    <input type="text" class="form-control" name="image_url" value="<?= $user['image_url'] ?>" required>
+                                                                </div>     
       
 
 
