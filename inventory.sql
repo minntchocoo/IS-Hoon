@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3308
--- Generation Time: Nov 17, 2023 at 02:46 PM
+-- Generation Time: Dec 05, 2023 at 11:45 AM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 8.0.7
 
@@ -53,8 +53,9 @@ CREATE TABLE `category` (
 
 INSERT INTO `category` (`Category_ID`, `category`, `description`) VALUES
 (3, 'Cake', 'dough'),
-(4, 'Sweetened Pastry', 'sugars'),
-(5, 'Flaked Pastry', 'small pieces');
+(5, 'Flaked Pastry', 'small pieces'),
+(7, 'Cake', 'fluffy'),
+(10, 'sweetened pastry', 'pastry');
 
 -- --------------------------------------------------------
 
@@ -74,9 +75,9 @@ CREATE TABLE `flavor` (
 
 INSERT INTO `flavor` (`flavor_ID`, `flavor`, `description`) VALUES
 (3, 'Cinnamon', 'sweet roll'),
-(4, 'Chocolate', 'all milk'),
 (5, 'Buttered', 'diacetyl'),
-(7, 'Blueberry', 'berries');
+(7, 'Blueberry', 'berries'),
+(11, 'vanilla', 'flavor');
 
 -- --------------------------------------------------------
 
@@ -102,9 +103,50 @@ CREATE TABLE `product` (
 --
 
 INSERT INTO `product` (`product_num`, `product_name`, `product_price`, `product_stock`, `exp_date`, `man_date`, `Category_ID`, `flavor_ID`, `Supplier_ID`, `sales_id`) VALUES
-(3, 'Mini Donuts', 30, '15', '2023-10-26 00:00:00', '2023-10-20 00:00:00', 4, 4, 4, 0),
-(4, 'Banana Cake', 55, '30', '2023-10-27 00:00:00', '2023-10-21 00:00:00', 3, 3, 2, 0),
-(5, 'Crossiant', 80, '30', '2023-10-21 00:00:00', '2023-10-27 00:00:00', 5, 5, 3, 0);
+(4, 'Banana Cake', 50, '30', '2023-11-30 00:00:00', '2023-11-15 00:00:00', 3, 3, 2, 0),
+(11, 'Cookies', 25, '30', '2023-12-14 00:00:00', '2023-12-01 00:00:00', 3, 5, 2, 0);
+
+--
+-- Triggers `product`
+--
+DELIMITER $$
+CREATE TRIGGER `before_update_product` BEFORE UPDATE ON `product` FOR EACH ROW BEGIN
+    -- Check if stock is below 10 after the update
+    IF (NEW.product_stock) < 5 THEN
+        -- You can add additional logic here, such as raising an error, logging, or taking some action
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Transaction failed, quantity exceeded ';
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_archive`
+--
+
+CREATE TABLE `product_archive` (
+  `archive_id` int(11) NOT NULL,
+  `product_name` varchar(255) DEFAULT NULL,
+  `product_price` decimal(10,2) DEFAULT NULL,
+  `product_stock` int(11) DEFAULT NULL,
+  `exp_date` date DEFAULT NULL,
+  `man_date` date DEFAULT NULL,
+  `Category_ID` int(11) DEFAULT NULL,
+  `flavor_ID` int(11) DEFAULT NULL,
+  `Supplier_ID` int(11) DEFAULT NULL,
+  `archived_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `product_archive`
+--
+
+INSERT INTO `product_archive` (`archive_id`, `product_name`, `product_price`, `product_stock`, `exp_date`, `man_date`, `Category_ID`, `flavor_ID`, `Supplier_ID`, `archived_at`) VALUES
+(1, 'biscuit', '25.00', 30, '2023-11-23', '2023-11-09', 5, 4, 3, '2023-11-17 15:00:36'),
+(2, 'buscuit', '25.00', 30, '2023-11-30', '2023-11-22', 5, 8, 2, '2023-11-29 08:21:13');
 
 -- --------------------------------------------------------
 
@@ -114,7 +156,7 @@ INSERT INTO `product` (`product_num`, `product_name`, `product_price`, `product_
 
 CREATE TABLE `sales` (
   `sales_id` int(11) NOT NULL,
-  `product_num` int(11) NOT NULL,
+  `product_num` int(11) DEFAULT NULL,
   `quantity` int(11) DEFAULT NULL,
   `total` decimal(10,0) DEFAULT NULL,
   `sale_date` timestamp NULL DEFAULT NULL
@@ -126,15 +168,18 @@ CREATE TABLE `sales` (
 
 INSERT INTO `sales` (`sales_id`, `product_num`, `quantity`, `total`, `sale_date`) VALUES
 (55, 4, 1, '55', '2023-10-23 21:25:53'),
-(56, 3, 1, '30', '2023-10-23 21:25:53'),
-(57, 5, 1, '80', '2023-10-23 21:25:53'),
-(58, 3, 1, '30', '2023-10-23 21:26:46'),
+(56, NULL, 1, '30', '2023-10-23 21:25:53'),
+(57, NULL, 1, '80', '2023-10-23 21:25:53'),
+(58, NULL, 1, '30', '2023-10-23 21:26:46'),
 (59, 4, 2, '110', '2023-10-23 21:26:46'),
-(60, 3, 2, '60', '2023-10-23 22:09:27'),
-(61, 5, 4, '320', '2023-10-23 22:10:13'),
-(62, 3, 5, '150', '2023-10-24 00:11:48'),
-(63, 3, 10, '300', '2023-10-24 00:28:46'),
-(64, 3, 25, '750', '2023-10-24 00:29:17');
+(60, NULL, 2, '60', '2023-10-23 22:09:27'),
+(61, NULL, 4, '320', '2023-10-23 22:10:13'),
+(62, NULL, 5, '150', '2023-10-24 00:11:48'),
+(63, NULL, 10, '300', '2023-10-24 00:28:46'),
+(64, NULL, 25, '750', '2023-10-24 00:29:17'),
+(65, NULL, 2, '60', '2023-11-17 07:33:59'),
+(67, NULL, 13, '390', '2023-11-17 07:46:10'),
+(73, NULL, 4, '120', '2023-11-29 01:30:28');
 
 -- --------------------------------------------------------
 
@@ -207,11 +252,16 @@ ALTER TABLE `flavor`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`product_num`),
-  ADD KEY `product_num` (`product_num`,`product_name`,`product_price`,`product_stock`,`exp_date`,`man_date`,`Category_ID`,`flavor_ID`,`Supplier_ID`),
   ADD KEY `Supplier_ID` (`Supplier_ID`),
   ADD KEY `flavor_ID` (`flavor_ID`),
   ADD KEY `Category_ID` (`Category_ID`),
   ADD KEY `sales_id` (`sales_id`);
+
+--
+-- Indexes for table `product_archive`
+--
+ALTER TABLE `product_archive`
+  ADD PRIMARY KEY (`archive_id`);
 
 --
 -- Indexes for table `sales`
@@ -241,25 +291,31 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `Category_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `Category_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `flavor`
 --
 ALTER TABLE `flavor`
-  MODIFY `flavor_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `flavor_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `product_num` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `product_num` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `product_archive`
+--
+ALTER TABLE `product_archive`
+  MODIFY `archive_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `sales_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `sales_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT for table `supplier`
@@ -281,15 +337,15 @@ ALTER TABLE `user`
 -- Constraints for table `product`
 --
 ALTER TABLE `product`
-  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`Supplier_ID`) REFERENCES `supplier` (`Supplier_ID`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `product_ibfk_2` FOREIGN KEY (`flavor_ID`) REFERENCES `flavor` (`flavor_ID`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `product_ibfk_3` FOREIGN KEY (`Category_ID`) REFERENCES `category` (`Category_ID`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`Supplier_ID`) REFERENCES `supplier` (`Supplier_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `product_ibfk_2` FOREIGN KEY (`Category_ID`) REFERENCES `category` (`Category_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `product_ibfk_3` FOREIGN KEY (`flavor_ID`) REFERENCES `flavor` (`flavor_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `sales`
 --
 ALTER TABLE `sales`
-  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`product_num`) REFERENCES `product` (`product_num`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`product_num`) REFERENCES `product` (`product_num`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -128,7 +128,7 @@ try
                                     <div class = "responseMessage">
                                         <p class = "responseMessage" <?= $is_success ? 'responseMessage__success' : 'responseMessage__error' ?>"> 
                                             <?= $response_message ?>
-
+                                        
                                         </p>
 
                                     </div>
