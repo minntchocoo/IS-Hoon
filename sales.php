@@ -116,26 +116,35 @@ try
     <script>
         const products = <?php echo json_encode($products); ?>;
         const cart = [];
+
         function addToCart() {
-            event.preventDefault(); 
+            event.preventDefault();
             const productSelect = document.getElementById("productSelect");
             const quantityInput = document.getElementById("quantity");
             const selectedProductId = productSelect.value;
-            const quantity = parseInt(quantityInput.value);
-            console.log( products)
-           
+            const quantity = parseInt(quantityInput.value, 10);
 
             if (!quantity || quantity < 1) {
                 alert("Please enter a valid quantity.");
                 return;
             }
 
-            try {
-                
-                const selectedProduct = products.find(products => products.product_num === selectedProductId);
-                
+            console.log(products);
+            console.log(selectedProductId);
 
+            // Check if products is an array and has items
+            if (!Array.isArray(products) || products.length === 0) {
+                alert("No products found in the database.");
+                return;
+            }
+
+            try {
+                console.log(selectedProductId);
+                const selectedProduct = products.find(product => product.product_num === selectedProductId);
+
+                console.log(selectedProduct);
                 if (!selectedProduct) {
+                    console.log("selected product", selectedProduct);
                     throw new Error("Product not found in the database.");
                 }
 

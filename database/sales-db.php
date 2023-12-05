@@ -43,10 +43,10 @@ try {
             // Check if the stock is below 10
             if ($current_stock - $quantity < 5) {
                 $stock_increase = 30;
-                
-                $stmt = $pdo->prepare("UPDATE product SET product_stock = product_stock - :quantity WHERE product_num = :product_num");
+
+                $stmt = $pdo->prepare("UPDATE product SET product_stock = product_stock + :stock_increase WHERE product_num = :product_num");
                 $stmt->bindParam(':product_num', $product_num);
-                $stmt->bindParam(':quantity', $stock_increase);
+                $stmt->bindParam(':stock_increase', $stock_increase);
                 $stmt->execute();
 
                 $messages[] = "warning: Product with ID $product_name has low stock (below 10) and 10 stock was added.";
@@ -81,5 +81,4 @@ try {
 
     echo json_encode($response); // Return the response as JSON
 }
-
 ?>
