@@ -38,77 +38,125 @@ try
     <script src="https://kit.fontawesome.com/2cfb65917d.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/to/font-awesome/css/font-awesome.min.css">
     
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            width: 80%; /* Adjust the width as needed */
+            max-width: 400px; /* Set a maximum width if desired */
+            padding: 20px;
+            background-color: #7f2b2b; /* Adjust background color */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px; /* Optional: Add border-radius for rounded corners */
+        }
+
+        .modal-content {
+            /* Additional styles for the modal content if needed */
+        }
+
+        /* Additional styles for better readability */
+        #salesTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #salesTable th, #salesTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #salesTable th {
+            background-color: #f2f2f2;
+        }
+        /* Close button style */
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .reports-button {
+            border-radius: 8px;
+            top: 10px;
+            right: 10px;
+            font-size: 22px;
+        }
+    </style>
 
 </head>
 <body>
-<div id="dashboardMainContainer">
+    <div id="dashboardMainContainer">
         <?php include('partial/app-sidebar.php') ?>
 
         <div class="dashboard_content_container" id="dashboard_content_container">
             <?php include('partial/app-topNav.php') ?>
     
             <div class="dashboard_content">
-                        <div class="dashboard_content_main">
-                            <div id = "userAddFormContainer">
-                            <?php 
-                                    if(isset($_SESSION['response'])) {
-                                        $response_message = $_SESSION['response']['messages']; 
-                                        $is_success = $_SESSION['response']['success'];
-                                
-                                ?>s
-                                    <div class = "responseMessage">
-                                        <p class = "responseMessage" <?= $is_success ? 'responseMessage__success' : 'responseMessage__error' ?>"> 
-                                            <?= $response_message ?>
+                <div class="dashboard_content_main">
+                    <button type="button" class="appBtn" onclick="reports()">Daily Sales Report</button>
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-button" onclick="closeModal()">&times;</span>
+                            <h2></h2>
+                            <table id="salesTable">
 
-                                        </p>
-
-                                    </div>
-                                <?php unset($_SESSION['response']); } 
-                                ?>
-                            
-
-                            <form id="salesForm" action="database/sales-db.php" method="POST" class="appForm">
-                                <div class="appFormInputContainer">
-                                    <h2><i class="fa-solid fa-table-list"></i> Product Selection</h2>
-                                    <label for="product_name">Product</label>
-                                    <select id="productSelect" name="product_id">
-                                        <?php foreach ($rs1 as $output) { ?>
-                                            <option value="<?php echo $output['product_num']; ?>">
-                                                <?php echo $output['product_name']; ?> - $<?php echo number_format($output['product_price'], 2); ?>
-                                            </option>
-                                        <?php } ?>
-                                    </select>
-                                    <input type="number" id="quantity" name="quantity" placeholder="Quantity" min="1">
-                                    <button onclick="addToCart()">Add to Cart</button>
-                                </div>
-
-                                <br>
-
-                                <div class="appFormInputContainer">
-                                    <div>
-                                        <h2><i class="fa-solid fa-cart-plus"></i> Shopping Cart</h2>
-                                        <ul id="cart">
-                                            <!-- Cart items will be displayed here -->
-                                        </ul>
-                                        <p>Total: $<span id="total">0.00</span></p>
-                                        <input type="hidden" value="">
-                                    </div>
-                                </div>
-
-                                <button type="button" class="appBtn" onclick="checkout()">Checkout</button>
-                            </form>
-
-                                
-                            </div>
-                                        
+                            </table>
                         </div>
                     </div>
+                    <div id="userAddFormContainer">
+                        <?php 
+                            if(isset($_SESSION['response'])) {
+                                $response_message = $_SESSION['response']['messages']; 
+                                $is_success = $_SESSION['response']['success'];
+                        ?>
+                            <div class="responseMessage <?= $is_success ? 'responseMessage__success' : 'responseMessage__error' ?>">
+                                <p><?= $response_message ?></p>
+                            </div>
+                        <?php unset($_SESSION['response']); } ?>
+                    
+                        <form id="salesForm" action="database/sales-db.php" method="POST" class="appForm">
+                            <div class="appFormInputContainer">
+                                <h2><i class="fa-solid fa-table-list"></i> Product Selection</h2>
+                                <label for="product_name">Product</label>
+                                <select id="productSelect" name="product_id">
+                                    <?php foreach ($rs1 as $output) { ?>
+                                        <option value="<?php echo $output['product_num']; ?>">
+                                            <?php echo $output['product_name']; ?> - $<?php echo number_format($output['product_price'], 2); ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                                <input type="number" id="quantity" name="quantity" placeholder="Quantity" min="1">
+                                <button onclick="addToCart()">Add to Cart</button>
+                            </div>
+
+                            <br>
+
+                            <div class="appFormInputContainer">
+                                <div>
+                                    <h2><i class="fa-solid fa-cart-plus"></i> Shopping Cart</h2>
+                                    <ul id="cart">
+                                        <!-- Cart items will be displayed here -->
+                                    </ul>
+                                    <p>Total: $<span id="total">0.00</span></p>
+                                    <input type="hidden" value="">
+                                </div>
+                            </div>
+
+                            <button type="button" class="appBtn" onclick="checkout()">Checkout</button>
+                        </form>
+                    </div>
                 </div>
-        
+            </div>
+        </div>
     </div>
 
-    
- 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src='js/script.js'></script>
 </body>
@@ -252,6 +300,46 @@ try
 
             return `Receipt:\n${items.join('\n')}\n\nTotal: $${receipt.total.toFixed(2)}`;
         }
+
+        function reports() {
+        var modal = document.getElementById("myModal");
+        modal.style.display = "block";
+
+        // Make an AJAX call to fetch data from the server
+        $.ajax({
+            type: "POST",
+            url: "database/reports.php", // Replace with the actual URL of your PHP script
+            data: { targetDate: '2023-12-07' }, // Replace with the desired target date
+            success: function (response) {
+                var salesData = JSON.parse(response);
+                displaySalesData(salesData);
+            },
+            error: function () {
+                alert("An error occurred while fetching data.");
+            }
+        });
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+
+        function displaySalesData(salesData) {
+            var table = document.getElementById("salesTable");
+            var header = table.createTHead();
+            var headerRow = header.insertRow();
+            headerRow.insertCell().innerHTML = "<b>Product</b>";
+            headerRow.insertCell().innerHTML = "<b>Quantity</b>";
+            headerRow.insertCell().innerHTML = "<b>Price</b>";
+
+            salesData.forEach(function (sale) {
+                var row = table.insertRow();
+                row.insertCell().innerHTML = sale.product_name; // Assuming your PHP returns product_name
+                row.insertCell().innerHTML = sale.total_quantity;
+                row.insertCell().innerHTML = "$" + sale.total_amount;
+            });
+        }
+
 
 
 

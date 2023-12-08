@@ -446,3 +446,38 @@ a.addCategory{
 a.addFlavor{
     float:right
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 80%; /* Adjust the width as needed */
+    max-width: 400px; /* Set a maximum width if desired */
+    padding: 20px;
+    background-color: #f8f8f8; /* Adjust background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+    /* Additional styles for the modal content if needed */
+}
+
+/* Additional styles for better readability */
+#salesTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#salesTable th, #salesTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#salesTable th {
+    background-color: #f2f2f2;
+}
