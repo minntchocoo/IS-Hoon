@@ -28,6 +28,13 @@
             margin-bottom: 10px;
             display: flex;
             align-items: center;
+            width: calc(33.33% - 20px);
+            box-sizing: border-box;
+            float: left;
+            margin-right: 20px;
+        }
+        .product-card:last-child {
+            margin-right: 0;
         }
         .product-card img {
             width: 100px;
@@ -52,7 +59,10 @@
                 <div class="dashboard_content_main">
                     <h2>On-Stock Products</h2>
                     <div id="productList">
-                        <?php foreach ($products as $product) : ?>
+                        <?php 
+                            $count = 0;
+                            foreach ($products as $product) : 
+                        ?>
                             <div class="product-card">
                                 <img src="<?php echo $product['image_url']; ?>" alt="<?php echo $product['product_name']; ?>">
                                 <div>
@@ -61,8 +71,15 @@
                                     <p>Price: $<?php echo $product['product_price']; ?></p>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                            <?php 
+                                $count++;
+                                if ($count % 3 == 0) {
+                                    echo '<div style="clear:both;"></div>';
+                                }
+                            endforeach; 
+                            ?>
                     </div>
+                    
                 </div>
             </div>
         </div>

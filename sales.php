@@ -100,9 +100,13 @@ try
     
             <div class="dashboard_content">
                 <div class="dashboard_content_main">
+                    <input type="date" id="inputDate" name="targetDate">
                     <button type="button" class="appBtn" onclick="reports()">Daily Sales Report</button>
+                    <button type="button" onclick="navigateToNextPage()">Reports Page</button>
                     <div id="myModal" class="modal">
                         <div class="modal-content">
+                            
+
                             <span class="close-button" onclick="closeModal()">&times;</span>
                             <h2></h2>
                             <table id="salesTable">
@@ -120,7 +124,7 @@ try
                                 <p><?= $response_message ?></p>
                             </div>
                         <?php unset($_SESSION['response']); } ?>
-                    
+                      
                         <form id="salesForm" action="database/sales-db.php" method="POST" class="appForm">
                             <div class="appFormInputContainer">
                                 <h2><i class="fa-solid fa-table-list"></i> Product Selection</h2>
@@ -303,43 +307,76 @@ try
 
         function reports() {
         var modal = document.getElementById("myModal");
+        var inputDate = document.getElementById("inputDate").value;
+
         modal.style.display = "block";
 
         // Make an AJAX call to fetch data from the server
         $.ajax({
             type: "POST",
-            url: "database/reports.php", // Replace with the actual URL of your PHP script
-            data: { targetDate: '2023-12-07' }, // Replace with the desired target date
+            url: "database/reports.php",
+            data: { targetDate: inputDate },
+            dataType: 'json', // Specify that the expected response is JSON
             success: function (response) {
-                var salesData = JSON.parse(response);
-                displaySalesData(salesData);
+                console.log(response); // Log the raw response to the console
+                if (response && response.error) {
+                    // Handle server-side error
+                    console.error("Server error:", response.error);
+                    alert("An error occurred on the server.");
+                } else {
+                    try {
+                        var salesData = response; // Assuming the response is already parsed as JSON
+                        displaySalesData(salesData);
+                    } catch (e) {
+                        console.error("Error parsing JSON:", e);
+                        // Handle the error gracefully
+                        alert("Error parsing server response.");
+                    }
+                }
             },
-            error: function () {
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", status, error);
                 alert("An error occurred while fetching data.");
             }
         });
-        }
+    }
 
-        function closeModal() {
-            document.getElementById("myModal").style.display = "none";
-        }
+    function closeModal() {
+        document.getElementById("myModal").style.display = "none";
+        
+        // Clear the entire table content (including the header)
+        document.getElementById("salesTable").innerHTML = "";
+    }
 
-        function displaySalesData(salesData) {
-            var table = document.getElementById("salesTable");
-            var header = table.createTHead();
-            var headerRow = header.insertRow();
-            headerRow.insertCell().innerHTML = "<b>Product</b>";
-            headerRow.insertCell().innerHTML = "<b>Quantity</b>";
-            headerRow.insertCell().innerHTML = "<b>Price</b>";
+    function navigateToNextPage() {
+        // Replace 'nextPage.html' with the actual URL of your next page
+        window.location.href = 'reports.php';
+    }
 
-            salesData.forEach(function (sale) {
-                var row = table.insertRow();
-                row.insertCell().innerHTML = sale.product_name; // Assuming your PHP returns product_name
-                row.insertCell().innerHTML = sale.total_quantity;
-                row.insertCell().innerHTML = "$" + sale.total_amount;
-            });
-        }
 
+    function displaySalesData(salesData) {
+        var table = document.getElementById("salesTable");
+        var header = table.createTHead();
+        var headerRow = header.insertRow();
+        headerRow.insertCell().innerHTML = "<b>Product</b>";
+        headerRow.insertCell().innerHTML = "<b>Quantity</b>";
+        headerRow.insertCell().innerHTML = "<b>Price</b>";
+
+        salesData.forEach(function (sale) {
+            var row = table.insertRow();
+            // Assuming product_num is the product number and is present in salesData
+            var productName = getProductById(sale.product_num);
+            row.insertCell().innerHTML = productName; // Display product name
+            row.insertCell().innerHTML = sale.quantity;
+            row.insertCell().innerHTML = "$" + sale.total;
+        });
+    }
+
+    // Function to get product name by product number
+    function getProductById(productId) {
+        const product = products.find(product => product.product_num === productId);
+        return product ? product.product_name : "Unknown Product";
+    }
 
 
 
@@ -348,44 +385,3 @@ try
 </html>
 
 
-<?php
-try {
-    // Replace with your actual database credentials and details
-    require('database/connection.php');
-
-    // Function to update product quantity after a sale
-
-    // Function to check and notify when stock is low
-    function checkLowStock($conn, $product_num, $threshold) {
-        $sql = "SELECT product_name, product_stock FROM product WHERE product_num = :product_num";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindParam(':product_num', $product_num, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($product) {
-            $product_stock = $product['product_stock'];
-
-            if ($product_stock <= $threshold) {
-                echo "Low stock for {$product['product_name']}. Current quantity: $product_stock.";
-                // Implement notification logic (e.g., send an email).
-            }
-        } else {
-            echo "Product not found.";
-        }
-    }
-
-    // Example usage:
-    $product_num = 3; // Replace with the actual product ID.
-    $sales = 0; // Replace with the actual quantity sold.
-    $low_stock_threshold = 10; // Set your low stock threshold.
-
-    checkLowStock($conn, $product_num, $low_stock_threshold);
-
-    // Close the database connection
-    $conn = null;
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-}
-?>

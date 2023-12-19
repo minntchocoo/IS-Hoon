@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3308
--- Generation Time: Dec 05, 2023 at 11:45 AM
+-- Generation Time: Dec 19, 2023 at 01:34 AM
 -- Server version: 10.4.19-MariaDB
 -- PHP Version: 8.0.7
 
@@ -25,12 +25,164 @@ DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOneDaySalesReport` (IN `targetDate` DATE)  BEGIN
+    SELECT 
+        sales_id,
+        product_num,
+        quantity,
+        total,
+        sale_date
+    FROM 
+        sales
+    WHERE 
+        DATE(sale_date) = targetDate;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOneDaySalesReport-Total` (IN `targetDate` DATE)  BEGIN
+    SELECT 
+        MIN(sales_id) as sales_id,
+        product_num,
+        SUM(quantity) as total_quantity,
+        SUM(total) as total_amount,
+        MIN(sale_date) as sale_date
+    FROM 
+        sales
+    WHERE 
+        DATE(sale_date) = targetDate
+    GROUP BY
+        product_num;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOneMonthSalesReport` (IN `targetMonth` INT(7), IN `targetYear` INT)  BEGIN
+    DECLARE startDate DATE;
+    DECLARE endDate DATE;
+    
+    SET startDate = CONCAT(targetYear, '-', targetMonth, '-01');
+    SET endDate = LAST_DAY(startDate);
+
+    SELECT 
+        sales_id,
+        product_num,
+        quantity,
+        total,
+        sale_date
+    FROM 
+        sales
+    WHERE 
+        sale_date BETWEEN startDate AND endDate;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOneMonthSalesReportTotal` (IN `targetMonth` VARCHAR(7), IN `targetYear` INT)  BEGIN
+    DECLARE startDate DATE;
+    DECLARE endDate DATE;
+    
+    SET startDate = CONCAT(targetYear, '-', targetMonth, '-01');
+    SET endDate = LAST_DAY(startDate);
+
+    SELECT 
+        MIN(sales_id) as sales_id,
+        product_num,
+        SUM(quantity) as total_quantity,
+        SUM(total) as total_amount,
+        MIN(sale_date) as sale_date
+    FROM 
+        sales
+    WHERE 
+        sale_date BETWEEN startDate AND endDate
+    GROUP BY
+        product_num;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOneWeekSalesReport` (IN `startDate` DATE)  BEGIN
+    DECLARE endDate DATE;
+    SET endDate = DATE_ADD(startDate, INTERVAL 6 DAY);
+
+    SELECT 
+        sales_id,
+        product_num,
+        quantity,
+        total,
+        sale_date
+    FROM 
+        sales
+    WHERE 
+        sale_date BETWEEN startDate AND endDate;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOneWeekSalesReportTotal` (IN `startDate` DATE)  BEGIN
+    DECLARE endDate DATE;
+    SET endDate = DATE_ADD(startDate, INTERVAL 6 DAY);
+
+    SELECT 
+        MIN(sales_id) as sales_id,
+        product_num,
+        SUM(quantity) as total_quantity,
+        SUM(total) as total_amount,
+        MIN(sale_date) as sale_date
+    FROM 
+        sales
+    WHERE 
+        sale_date BETWEEN startDate AND endDate
+    GROUP BY
+        product_num;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertCategory` (IN `p_category` VARCHAR(255), IN `p_description` VARCHAR(255))  BEGIN
     INSERT INTO category (category, description) VALUES (p_category, p_description);
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertFlavor` (IN `p_flavor` VARCHAR(255), IN `p_description` VARCHAR(255))  BEGIN
     INSERT INTO flavor (flavor, description) VALUES (p_flavor, p_description);
+END$$
+
+--
+-- Functions
+--
+CREATE DEFINER=`root`@`localhost` FUNCTION `GetTotalQuantityByProductNum` (`targetProductNum` INT) RETURNS INT(11) BEGIN
+    DECLARE totalQuantity INT;
+
+    SELECT SUM(quantity) INTO totalQuantity
+    FROM sales
+    WHERE product_num = targetProductNum;
+
+    IF totalQuantity IS NULL THEN
+        SET totalQuantity = 0;
+    END IF;
+
+    RETURN totalQuantity;
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `GetTotalSalesByProductNum` (`targetProductNum` INT) RETURNS DECIMAL(10,2) BEGIN
+    DECLARE totalSales DECIMAL(10, 2);
+
+    SELECT SUM(total) INTO totalSales
+    FROM sales
+    WHERE product_num = targetProductNum;
+
+    IF totalSales IS NULL THEN
+        SET totalSales = 0.00;
+    END IF;
+
+    RETURN totalSales;
+END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `GetWeeklySalesData` (`startDate` DATE) RETURNS LONGTEXT CHARSET utf8mb4 COLLATE utf8mb4_bin BEGIN
+    DECLARE jsonData JSON;
+
+    SELECT JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'sales_day', DATE(sale_date),
+            'total_sales', SUM(total),
+            'total_quantity', SUM(quantity)
+        )
+    )
+    INTO jsonData
+    FROM sales
+    WHERE sale_date >= startDate
+    GROUP BY DATE(sale_date)
+    ORDER BY DATE(sale_date);
+
+    RETURN jsonData;
 END$$
 
 DELIMITER ;
@@ -76,8 +228,7 @@ CREATE TABLE `flavor` (
 INSERT INTO `flavor` (`flavor_ID`, `flavor`, `description`) VALUES
 (3, 'Cinnamon', 'sweet roll'),
 (5, 'Buttered', 'diacetyl'),
-(7, 'Blueberry', 'berries'),
-(11, 'vanilla', 'flavor');
+(7, 'Blueberry', 'berries');
 
 -- --------------------------------------------------------
 
@@ -95,16 +246,18 @@ CREATE TABLE `product` (
   `Category_ID` int(11) NOT NULL,
   `flavor_ID` int(11) NOT NULL,
   `Supplier_ID` int(11) NOT NULL,
-  `sales_id` int(11) NOT NULL
+  `sales_id` int(11) NOT NULL,
+  `image_url` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`product_num`, `product_name`, `product_price`, `product_stock`, `exp_date`, `man_date`, `Category_ID`, `flavor_ID`, `Supplier_ID`, `sales_id`) VALUES
-(4, 'Banana Cake', 50, '30', '2023-11-30 00:00:00', '2023-11-15 00:00:00', 3, 3, 2, 0),
-(11, 'Cookies', 25, '30', '2023-12-14 00:00:00', '2023-12-01 00:00:00', 3, 5, 2, 0);
+INSERT INTO `product` (`product_num`, `product_name`, `product_price`, `product_stock`, `exp_date`, `man_date`, `Category_ID`, `flavor_ID`, `Supplier_ID`, `sales_id`, `image_url`) VALUES
+(4, 'Banana Cake', 50, '29', '2023-12-17 00:00:00', '2023-12-07 00:00:00', 3, 3, 2, 0, 'https://sallysbakingaddiction.com/wp-content/uploads/2018/10/moist-banana-bread.jpg'),
+(11, 'Cookies', 25, '29', '2023-12-14 00:00:00', '2023-12-01 00:00:00', 3, 5, 2, 0, 'https://sallysbakingaddiction.com/wp-content/uploads/2013/05/classic-chocolate-chip-cookies.jpg'),
+(13, 'Macarons', 35, '30', '2023-12-20 00:00:00', '2023-12-05 00:00:00', 10, 5, 4, 0, 'https://sallysbakingaddiction.com/wp-content/uploads/2021/02/french-macarons.jpg');
 
 --
 -- Triggers `product`
@@ -179,7 +332,16 @@ INSERT INTO `sales` (`sales_id`, `product_num`, `quantity`, `total`, `sale_date`
 (64, NULL, 25, '750', '2023-10-24 00:29:17'),
 (65, NULL, 2, '60', '2023-11-17 07:33:59'),
 (67, NULL, 13, '390', '2023-11-17 07:46:10'),
-(73, NULL, 4, '120', '2023-11-29 01:30:28');
+(73, NULL, 4, '120', '2023-11-29 01:30:28'),
+(78, 4, 1, '50', '2023-12-18 17:04:56'),
+(79, 11, 1, '25', '2023-12-18 17:05:02'),
+(80, NULL, 2, '10', '2023-12-14 16:00:00'),
+(81, NULL, 3, '15', '2023-12-15 16:00:00'),
+(82, NULL, 4, '20', '2023-12-16 16:00:00'),
+(83, NULL, 5, '25', '2023-12-17 16:00:00'),
+(84, NULL, 6, '30', '2023-12-18 16:00:00'),
+(85, NULL, 7, '35', '2023-12-19 16:00:00'),
+(86, NULL, 8, '40', '2023-12-20 16:00:00');
 
 -- --------------------------------------------------------
 
@@ -303,7 +465,7 @@ ALTER TABLE `flavor`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `product_num` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `product_num` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `product_archive`
@@ -315,7 +477,7 @@ ALTER TABLE `product_archive`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `sales_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `sales_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `supplier`
