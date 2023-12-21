@@ -54,6 +54,21 @@
 
     <link rel="stylesheet" type="text/css" href="css/login.css?v=p<?php echo time();?>">
     <script src="https://kit.fontawesome.com/2cfb65917d.js" crossorigin="anonymous"></script>
+    <style>
+        #totalsContainer {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #663311b7;
+            color: #fff;
+        }
+
+        .total-value {
+            font-weight: bold;
+            color: #007BFF; /* Adjust the color as needed */
+        }
+    </style>
 </head>
 <body>
     <div id="dashboardMainContainer">
