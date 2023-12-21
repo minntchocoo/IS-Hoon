@@ -8,10 +8,9 @@
 
 
     // Function to get total sales by product number
-    function GetTotalSalesByProductNum($targetProductNum) {
-        // Use the appropriate SQL query to get total sales
+    function GetTotalSalesByProductNum($targetProductNum)
+    {
         require('database/connection.php');
-        // Sample query using MySQL function (replace this with your actual query)
         $sql = "SELECT getTotalSalesByProductNum(:product_num) AS total_sales";
 
         $stmt = $conn->prepare($sql);
@@ -22,13 +21,9 @@
         return $result['total_sales'];
     }
 
-
     // Function to get total quantity by product number
-    function GetTotalQuantityByProductNum($targetProductNum) {
-        // Use the appropriate SQL query to get total quantity
-        // ...
-
-        // Sample query (replace this with your actual query)
+    function GetTotalQuantityByProductNum($targetProductNum)
+    {
         $sql = "SELECT getTotalQuantityByProductNum(:product_num) AS total_quantity";
         require('database/connection.php');
         $stmt = $conn->prepare($sql);
@@ -69,29 +64,18 @@
                 <div class="dashboard_content_main">
                     <!-- Chart Container -->
                     <canvas id="salesChart" width="400" height="200"></canvas>
-                    <form action="#" method="post">
-                    <label for="productSelect">Select Product:</label>
-                    <select id="productSelect" name="product_num">
-                        <?php foreach ($products as $product): ?>
-                            <option value="<?php echo $product['product_num']; ?>"><?php echo $product['product_name']; ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <form id="getTotalsForm" action="#" method="post">
+                        <label for="productSelect">Select Product:</label>
+                        <select id="productSelect" name="product_num">
+                            <?php foreach ($products as $product): ?>
+                                <option value="<?php echo $product['product_num']; ?>"><?php echo $product['product_name']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
 
-                    <input type="submit" value="Get Totals">
-                    <?php
-                // Display total sales and quantity when form is submitted
-                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                            $selectedProductNum = $_POST["product_num"];
+                        <input type="button" value="Get Totals" onclick="getTotals()">
+                    </form>
 
-                            $totalSales = GetTotalSalesByProductNum($selectedProductNum);
-                            $totalQuantity = GetTotalQuantityByProductNum($selectedProductNum);
-
-                            echo "<h2>Total Sales: $totalSales</h2>";
-                            echo "<h2>Total Quantity: $totalQuantity</h2>";
-                        }
-                        ?>
-
-                </form>
+                    <div id="totalsContainer"></div>
                 </div>
              
 
@@ -105,7 +89,25 @@
     
    <script>
     // Function to fetch sales data from the server
-    function fetchSalesData() {
+    function getTotals() {
+        var selectedProductNum = $("#productSelect").val();
+
+        $.ajax({
+            type: 'POST',
+            url: 'database/getTotal.php', // Replace with the actual URL of your PHP script
+            data: { product_num: selectedProductNum },
+            success: function(response) {
+                $("#totalsContainer").html(response);
+                updateChart(); // Call the function to update the chart if needed
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error);
+                alert('An error occurred while fetching data.');
+            }
+        });
+    }
+
+function fetchSalesData() {
         // Make an AJAX call to fetch data from the server
         $.ajax({
             type: 'POST',
