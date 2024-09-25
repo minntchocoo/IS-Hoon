@@ -69,7 +69,6 @@
             color: #007BFF; /* Adjust the color as needed */
         }
     </style>
-
 </head>
 <body>
     <div id="dashboardMainContainer">
